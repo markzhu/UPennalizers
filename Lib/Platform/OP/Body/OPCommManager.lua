@@ -260,34 +260,18 @@ function nonsync_read()
 		for i=1,#idMap do 
 			idToRead[i]=i;
 		end
-        else --if actuator.readType[1]==0 then --Head only reading
+        else
+	    --Initialize position variable as current commanded values
 	    for i = 3,#idMap do
 	        sensor.position[i] = actuator.command[i];
 	    end;
-
---[[
-	elseif actuator.readType[1]==2 then --Head+Leg reading
-	    for i = 3,6 do
-	        sensor.position[i] = actuator.command[i];
-	    end;
-	    for i = 18,#idMap do
-	        sensor.position[i] = actuator.command[i];
-	    end;
-
-  	    c_mod=count%4;
-	    if c_mod==1 then	idToRead={6,7,8};  
-	    elseif c_mod==2 then 	idToRead={9,10,11};  
-	    elseif c_mod==3 then	idToRead={12,13,14}
-	    else	idToRead={15,16,17};  
+	    if actuator.readType[1] ==2 then --head + lleg reading
+		idToRead={1,2,8,9,10};   --Head only reading + lleg reading
+	    elseif actuator.readType[1]==3 then
+		idToRead={1,2,14,15,16};   --Head only reading + rleg reading
 	    end
-	elseif actuator.readType[1]==3 then --No reading
-  	    idToRead={}; 
-	    for i = 1,#idMap do
-	        sensor.position[i] = actuator.command[i];
-	    end;
---]]
-
 	end
+
 	for i = 1,#idToRead do
  	    local id = idMap[idToRead[i]];
 	    --Sometimes DCM crashes here... maybe a bug
@@ -295,7 +279,8 @@ function nonsync_read()
 	    if id then
 	        raw=Dynamixel.get_position(id);
 	        if raw then
-		    sensor.position[ idToRead[i] ] = (raw-posZero[i])/scale[i] - actuator.offset[i];
+		    sensor.position[idToRead[i]] = (raw-posZero[idToRead[i]])
+			/scale[idToRead[i]] - actuator.offset[idToRead[i]];
 	    	end
 	    end
 	end
