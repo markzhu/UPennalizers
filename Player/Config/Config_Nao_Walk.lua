@@ -59,6 +59,18 @@ walk.ankleImuParamY={0.2, -2.7*walk.gyroFactor,
 walk.hipImuParamY={0.1, -0.3*walk.gyroFactor,
         .5*math.pi/180, 5*math.pi/180};
 
+
+--For new body with correct RPY gyro readings
+
+walk.ankleImuParamX={0.15, 0.40*walk.gyroFactor,
+        1*math.pi/180, 5*math.pi/180};
+walk.kneeImuParamX={0.1, 0.3*walk.gyroFactor,
+        .5*math.pi/180, 5*math.pi/180};
+walk.ankleImuParamY={0.2, 2.7*walk.gyroFactor,
+        .5*math.pi/180, 5*math.pi/180};
+walk.hipImuParamY={0.1, 0.3*walk.gyroFactor,
+        .5*math.pi/180, 5*math.pi/180};
+
 --------------------------------------------
 -- WalkKick parameters
 --------------------------------------------

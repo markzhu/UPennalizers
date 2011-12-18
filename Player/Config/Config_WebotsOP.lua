@@ -33,6 +33,8 @@ dev.game_control='WebotsOPGameControl';
 dev.walk='NewWalk';
 dev.kick='NewKick';
 --dev.kick='NSLKickPunch';
+dev.walk='NewWalk2';
+dev.walk='TestWalk';
 
 -- Game Parameters
 
@@ -52,19 +54,8 @@ fsm.game = 'OpDemo'
 fsm.game = 'RoboCup';
 
 if( fsm.game == 'RoboCup' ) then
---[[
-  if (game.playerID == 1) then
-    fsm.body = {'OpGoalie'};
-    fsm.head = {'OpGoalie'};
-  else
-    fsm.body = {'OpPlayer'};
-    fsm.head = {'OpPlayer'};
-  end
---]]
-
   fsm.body = {'OpPlayer'};
   fsm.head = {'OpPlayer'};
---fsm.head = {'OpPlayerNSL'};
 --fsm.body = {'OpPlayerNSL'};
 
 elseif( fsm.game == 'Dodgeball' ) then
@@ -100,10 +91,8 @@ km.standup_back = 'km_WebotsOP_StandupFromBack.lua';
 --km.standup_front = 'km_NSLOP_StandupFromFront.lua';
 --km.standup_back = 'km_NSLOP_StandupFromBack.lua';
 --km.standup_front = 'km_NSLOP_StandupFromFront2.lua';
-
-
-km.kick_right = 'km_NSLOP_taunt1.lua';
-km.kick_left = 'km_NSLOP_StandupFromFront2.lua';
+--km.kick_right = 'km_NSLOP_taunt1.lua';
+--km.kick_left = 'km_NSLOP_StandupFromFront2.lua';
 
 
 --Webots tStep is 2x of real robot

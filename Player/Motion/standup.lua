@@ -32,8 +32,7 @@ function entry()
   local imuAngle = Body.get_sensor_imuAngleRPY();
   local imuAngleY = imuAngle[2];
 
-  --Now plus pitch = lying backside
-  if (imuAngleY < 0) then
+  if (imuAngleY > 0) then
     print("standupFromFront");
     keyframe.do_motion("standupFromFront");
   else
@@ -48,7 +47,7 @@ function update()
     local imuAngle = Body.get_sensor_imuAngleRPY();
 
     local maxImuAngle = math.max(math.abs(imuAngle[1]),
-	 math.abs(imuAngle[2]+bodyTilt));
+	 math.abs(imuAngle[2]-bodyTilt));
 
     if (maxImuAngle > fallAngle) then
       return "fail";

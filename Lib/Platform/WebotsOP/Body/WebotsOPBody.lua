@@ -278,25 +278,23 @@ function update_imu()
   local imuGyrRPY = get_sensor_imuGyrRPY();
   local accXYZ = get_sensor_imuAccXYZ();
 
-  --Simple integration
+  --Simple gyro integration
   imuAngle[1] = imuAngle[1] + tDelta * imuGyrRPY[1] * 0.9; --to compensate bodyTilt
   imuAngle[2] = imuAngle[2] + tDelta * imuGyrRPY[2] ;
   imuAngle[3] = imuAngle[3] + tDelta * imuGyrRPY[3] * 0.9; --to compensate bodyTilt
 
   --Update using accelerometer values 
-  local gAccel = 9.80;
   accX = accXYZ[1];
   accY = accXYZ[2];
   if ((accX > -1) and (accX < 1) and (accY > -1) and (accY < 1)) then
-    imuAngle[1] = imuAngle[1] + aImuFilter*(math.asin(accY) - imuAngle[1]);
-    imuAngle[2] = imuAngle[2] + aImuFilter*(-math.asin(accX) - imuAngle[2]);
+    imuAngle[1] = imuAngle[1] + aImuFilter*(-math.asin(accY) - imuAngle[1]);
+    imuAngle[2] = imuAngle[2] + aImuFilter*(math.asin(accX) - imuAngle[2]);
   end
 
   --[[
 
   print("imuGyrRPY:",imuGyrRPY[1],imuGyrRPY[2])
   print("imuAngleRP:",imuAngle[1]*180/math.pi,imuAngle[2]*180/math.pi)
-
 
   print("RPY:",
 	imuAngle[1]*180/math.pi,
@@ -305,8 +303,6 @@ function update_imu()
   --]]
 
 end
-
-
 
 
 -- Extra for compatibility
@@ -340,14 +336,15 @@ function get_sensor_imuGyrRPY( )
   --SJ: modified the controller wrapper function
   gyro = controller.wb_gyro_get_values(tags.gyro);
 
-
   --This is in degree/sec unit
-  gyro_proc={(gyro[1]-512)/0.273, (gyro[2]-512)/0.273, -(gyro[3]-512)/0.273};
+  gyro_proc={-(gyro[1]-512)/0.273, 
+	     -(gyro[2]-512)/0.273, 
+	      (gyro[3]-512)/0.273};
 
   --This is in rad/s unit
-  gyro_proc={(gyro[1]-512)/0.273*math.pi/180
-	, (gyro[2]-512)/0.273*math.pi/180,
-	 -(gyro[3]-512)/0.273*math.pi/180};
+  gyro_proc={-(gyro[1]-512)/0.273*math.pi/180
+	, -(gyro[2]-512)/0.273*math.pi/180,
+	 (gyro[3]-512)/0.273*math.pi/180};
 
   return gyro_proc;
 end

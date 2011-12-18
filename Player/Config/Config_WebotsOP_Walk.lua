@@ -59,6 +59,17 @@ walk.hipImuParamY={1,-1*gyroFactor, 2*math.pi/180, 10*math.pi/180};
 walk.armImuParamX={0.3,-10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
 walk.armImuParamY={0.3,-10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
 
+
+--Now with correct gyro direction
+
+gyroFactor = 0.273* 300 / 1024; --based on rad/s unit from imuGyrRPY()
+walk.ankleImuParamX={1,0.75*gyroFactor, 2*math.pi/180, 10*math.pi/180};
+walk.kneeImuParamX={1,1.5*gyroFactor, 2*math.pi/180, 10*math.pi/180};
+walk.ankleImuParamY={1,1*gyroFactor, 2*math.pi/180, 10*math.pi/180};
+walk.hipImuParamY={1,1*gyroFactor, 2*math.pi/180, 10*math.pi/180};
+walk.armImuParamX={0.3,10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
+walk.armImuParamY={0.3,10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
+
 --------------------------------------------
 -- WalkKick parameters
 --------------------------------------------
