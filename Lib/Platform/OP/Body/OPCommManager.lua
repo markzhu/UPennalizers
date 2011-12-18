@@ -476,7 +476,7 @@ function update_imu()
 	tLast=t;
 	iAngle=vector.new({sensor.imuAngle[1],sensor.imuAngle[2],sensor.imuAngle[3]});
 	gyrAngleDelta = vector.new({sensor.imuGyr[1],sensor.imuGyr[2],sensor.imuGyr[3]})
-                *math.pi/180 * tPassed; --dps to rps conversion
+                * tPassed; --dps to rps conversion
 
 	--Angle transformation: yaw -> pitch -> roll
 	local tTrans=Transform.rotZ(iAngle[3]);
@@ -492,11 +492,13 @@ function update_imu()
 
         local accMag=sensor.imuAcc[1]^2+sensor.imuAcc[2]^2+sensor.imuAcc[3]^2;
  	if accMag>Config.angle.gMin and accMag<Config.angle.gMax then
-           local angY=math.atan2(sensor.imuAcc[1], math.sqrt(sensor.imuAcc[2]^2+sensor.imuAcc[3]^2) );
-           local angX=math.atan2(sensor.imuAcc[2], math.sqrt(sensor.imuAcc[1]^2+sensor.imuAcc[3]^2) );
+           local angR=-math.atan2(sensor.imuAcc[2], 
+		math.sqrt(sensor.imuAcc[1]^2+sensor.imuAcc[3]^2) );
+           local angP=math.atan2(sensor.imuAcc[1], 
+		math.sqrt(sensor.imuAcc[2]^2+sensor.imuAcc[3]^2) );
            iAngle[1], iAngle[2] =
- 	        (1-Config.angle.accFactor)*iAngle[1]+Config.angle.accFactor*angX,
-           (1-Config.angle.accFactor)*iAngle[2]+Config.angle.accFactor*angY;
+ 	        (1-Config.angle.accFactor)*iAngle[1]+Config.angle.accFactor*angR,
+		(1-Config.angle.accFactor)*iAngle[2]+Config.angle.accFactor*angP;
 	end
 
 	sensor.imuAngle[1],sensor.imuAngle[2],sensor.imuAngle[3] = iAngle[1],iAngle[2],iAngle[3];

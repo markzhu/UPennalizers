@@ -97,24 +97,25 @@ servo.moveRange=vector.new({
 --]]
 -- End motor definitions
 
---Measured IMU bias parameters
-
+--Measured IMU parameters
 gyro={};
 gyro.rpy={3,2,1}	--axis remap, rotation in x,y,z
+
+-- Spec, 0.0008 V/dps  / (1.5/512) V/step * pi/180
+gyro.sensitivity=vector.new({1,-1,-1})/0.273* math.pi/180; 
+gyro.zero=vector.new({512,512,512});
+
 acc={};
 acc.xyz={2,1,3};	--axis remap
+
+--Those biases can be measured using test_imu.lua
+acc.sensitivity=vector.new({1,-1,-1})/110; --Measured value
+acc.zero=vector.new({512,512,512}); --Measured value
 
 angle={};
 angle.gMax = 1.3;
 angle.gMin= 0.7;
 angle.accFactor=0.2;
-
-gyro.sensitivity=vector.new({1,1,1})/0.273 -- Spec, 0.0008 V/dps  / (1.5/512) V/step 
-gyro.zero=vector.new({512,512,512});
-
---Those biases can be measured using test_imu.lua
-acc.sensitivity=vector.new({1,-1,-1})/110; --Measured value
-acc.zero=vector.new({512,512,512}); --Measured value
 
 -- Head Parameters
 
