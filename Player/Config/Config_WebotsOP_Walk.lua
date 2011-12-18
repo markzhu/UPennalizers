@@ -86,4 +86,3 @@ walk.walkKickHeightFactor = 2.5;
 walk.kickXComp = 0;
 walk.supportCompL = {0,0,0};
 walk.supportCompR = {0,0,0};
-
