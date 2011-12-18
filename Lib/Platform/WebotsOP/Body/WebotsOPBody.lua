@@ -135,17 +135,6 @@ end
 
 imuAngle = {0, 0, 0};
 aImuFilter = 1 - math.exp(-tDelta/0.5);
-function get_sensor_imuAngle(index)
-  if (not index) then
-    return imuAngle;
-  else
-    return imuAngle[index];
-  end
-end
-
-function get_sensor_imuAngleRPY(index)
-  return get_sensor_imuAngle(index);
-end
 
 -- Two buttons in the array
 function get_sensor_button(index)
@@ -159,8 +148,6 @@ function get_sensor_button(index)
 --]]
   return {0,0};
 end
-
-
 
 function get_head_position()
   local q = get_sensor_position();
@@ -275,10 +262,11 @@ end
 
 
 function update_imu()
-  local imuGyrRPY = get_sensor_imuGyrRPY();
+  local imuGyrRPY = get_sensor_imuGyrNormalized();
   local accXYZ = get_sensor_imuAccXYZ();
 
   --Simple gyro integration
+  --Todo: 3D transform based filtering
   imuAngle[1] = imuAngle[1] + tDelta * imuGyrRPY[1] * 0.9; --to compensate bodyTilt
   imuAngle[2] = imuAngle[2] + tDelta * imuGyrRPY[2] ;
   imuAngle[3] = imuAngle[3] + tDelta * imuGyrRPY[3] * 0.9; --to compensate bodyTilt
@@ -322,37 +310,26 @@ function get_sensor_imuGyr0()
   return vector.zeros(3)
 end
 
+--Raw IMU values
+
 function get_sensor_imuGyr( )
-  --SJ: modified the controller wrapper function
   gyro = controller.wb_gyro_get_values(tags.gyro);
-  gyro_proc={(gyro[1]-512)/0.273, (gyro[2]-512)/0.273,(gyro[3]-512)/0.273};
-  return gyro_proc;
+  return gyro;
 end
-
---SJ: added this for Nao support
---Roll, Pitch Yaw angles in degree per seconds unit 
-
-function get_sensor_imuGyrRPY( )
-  --SJ: modified the controller wrapper function
-  gyro = controller.wb_gyro_get_values(tags.gyro);
-
-  --This is in degree/sec unit
-  gyro_proc={-(gyro[1]-512)/0.273, 
-	     -(gyro[2]-512)/0.273, 
-	      (gyro[3]-512)/0.273};
-
-  --This is in rad/s unit
-  gyro_proc={-(gyro[1]-512)/0.273*math.pi/180
-	, -(gyro[2]-512)/0.273*math.pi/180,
-	 (gyro[3]-512)/0.273*math.pi/180};
-
-  return gyro_proc;
-end
-
 
 function get_sensor_imuAcc( )
   accel = controller.wb_accelerometer_get_values(tags.accelerometer);
-  return {accel[1]-512,accel[2]-512,0};
+  return accel;
+end
+
+--Normalized / remapped IMU values
+
+function get_sensor_imuGyrNormalized( )
+  gyro = controller.wb_gyro_get_values(tags.gyro);
+  gyro_proc={-(gyro[1]-512)/0.273*math.pi/180,
+	 -(gyro[2]-512)/0.273*math.pi/180,
+	 (gyro[3]-512)/0.273*math.pi/180};
+  return gyro_proc;
 end
 
 function get_sensor_imuAccXYZ()
@@ -360,6 +337,13 @@ function get_sensor_imuAccXYZ()
   return { -(accel[2]-512)/128, -(accel[1]-512)/128 , (accel[3]-512)/128};
 end
 
+function get_sensor_imuAngle(index)
+  if (not index) then
+    return imuAngle;
+  else
+    return imuAngle[index];
+  end
+end
 
 function set_actuator_eyeled(color)
   --input color is 0 to 31, so multiply by 8 to make 0-255

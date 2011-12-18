@@ -29,7 +29,7 @@ function entry()
   keyframe.entry();
   Body.set_body_hardness(1);
   -- start standup routine (back/front)
-  local imuAngle = Body.get_sensor_imuAngleRPY();
+  local imuAngle = Body.get_sensor_imuAngle();
   local imuAngleY = imuAngle[2];
 
   if (imuAngleY > 0) then
@@ -44,7 +44,7 @@ end
 function update()
   keyframe.update();
   if (keyframe.get_queue_len() == 0) then
-    local imuAngle = Body.get_sensor_imuAngleRPY();
+    local imuAngle = Body.get_sensor_imuAngle();
 
     local maxImuAngle = math.max(math.abs(imuAngle[1]),
 	 math.abs(imuAngle[2]-bodyTilt));

@@ -18,14 +18,10 @@ gyroFactor=0.273*math.pi/180 *300/1024;  --For degree per second unit
 gyroFactor=0.001; --Rough value for nao
 --gyroFactor=0.000;
 
-kick.ankleImuParamX={0.1, -0.3*gyroFactor, 
-	1*math.pi/180, 5*math.pi/180};
-kick.kneeImuParamX={0.1, -0.4*gyroFactor, 
-	.5*math.pi/180, 5*math.pi/180};
-kick.ankleImuParamY={0.1, -0.7*gyroFactor, 
-	.5*math.pi/180, 5*math.pi/180};
-kick.hipImuParamY={0.1, -0.3*gyroFactor, 
-	.5*math.pi/180, 5*math.pi/180};
+kick.ankleImuParamX={0.1, 0.3*gyroFactor,1*math.pi/180, 5*math.pi/180};
+kick.kneeImuParamX={0.1, 0.4*gyroFactor, .5*math.pi/180, 5*math.pi/180};
+kick.ankleImuParamY={0.1, 0.7*gyroFactor,.5*math.pi/180, 5*math.pi/180};
+kick.hipImuParamY={0.1, 0.3*gyroFactor, .5*math.pi/180, 5*math.pi/180};
 
 --Disabled for nao
 kick.armImuParamX={0,-10*gyroFactor, 20*math.pi/180, 45*math.pi/180};

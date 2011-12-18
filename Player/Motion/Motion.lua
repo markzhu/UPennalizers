@@ -93,13 +93,7 @@ function update()
   UltraSound.update();
 
   -- check if the robot is falling
-  local imuAngle = Body.get_sensor_imuAngleRPY();
-
-  --[[
-  local imuGyrRPY = Body.get_sensor_imuGyrRPY();
-  print("Imu RPY:",unpack(vector.new(imuAngle)*180/math.pi))
-  print("Imu Gyr RPY:",unpack(vector.new(imuGyrRPY)*180/math.pi))
-  --]]
+  local imuAngle = Body.get_sensor_imuAngle();
 
   local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]-bodyTilt));
   if (maxImuAngle > fallAngle) then

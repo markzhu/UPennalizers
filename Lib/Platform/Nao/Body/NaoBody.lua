@@ -300,20 +300,15 @@ function calibrate(count)
 end
 
 
---SJ: normalize gyro values here
---Value should be Roll-pitch-yaw 
-
+--SJ: normalized gyro values here
 --TODO: conversion to rad per seconds
-function get_sensor_imuGyrRPY()
+
+function get_sensor_imuGyNormalized()
   imuGyrRaw = get_sensor_imuGyr();
   gyro_roll = (imuGyrRaw[1]-gyro0[1]);
   gyro_pitch = (imuGyrRaw[2]-gyro0[2]);
   gyrRPY = vector.new({gyro_roll, gyro_pitch, 0});
   return gyrRPY;
-end
-
-function get_sensor_imuAngleRPY()
-  return get_sensor_imuAngle();
 end
 
 -- dummy functions

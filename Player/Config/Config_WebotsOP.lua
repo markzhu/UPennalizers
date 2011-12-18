@@ -33,8 +33,8 @@ dev.game_control='WebotsOPGameControl';
 dev.walk='NewWalk';
 dev.kick='NewKick';
 --dev.kick='NSLKickPunch';
-dev.walk='NewWalk2';
-dev.walk='TestWalk';
+--dev.walk='NewWalk2';
+--dev.walk='TestWalk';
 
 -- Game Parameters
 

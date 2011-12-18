@@ -273,7 +273,7 @@ function motion_legs(qLegs)
   phComp = math.min(1, phSingle/.1, (1-phSingle)/.1);
 
   --Ankle stabilization using gyro feedback
-  imuGyr = Body.get_sensor_imuGyrRPY();
+  imuGyr = Body.get_sensor_imuGyrNormalized();
 
   gyro_roll=imuGyr[1];
   gyro_pitch=imuGyr[2];

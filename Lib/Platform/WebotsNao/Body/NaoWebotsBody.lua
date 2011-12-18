@@ -102,6 +102,7 @@ end
 
 imuAngle = {0, 0};
 aImuFilter = 1 - math.exp(-tDelta/0.5);
+
 function get_sensor_imuAngle(index)
   if (not index) then
     return imuAngle;
@@ -109,13 +110,6 @@ function get_sensor_imuAngle(index)
     return imuAngle[index];
   end
 end
-
-function get_sensor_imuAngleRPY(index)
-  return get_sensor_imuAngle(index);
-end
-
-
-
 
 function get_sensor_button(index)
   local randThreshold = 0.001;
@@ -334,18 +328,13 @@ function get_sensor_imuGyr( )
   return gyro;
 end
 
---Roll Pitch Yaw in degree per seconds
-function get_sensor_imuGyrRPY( )
-  --SJ: modified the controller wrapper function
+--Roll Pitch Yaw in radian per seconds
+--Webots Nao has gain of 1.0, so no conversion needed
+function get_sensor_imuGyrNormalized( )
   gyro = controller.wb_gyro_get_values(tags.gyro);
-  -- TODO: rad/s conversion
   gyro_proc={gyro[1], gyro[2],0};
   return gyro_proc;
 end
-
-
-
-
 
 function get_sensor_imuAcc( )
   accel = controller.wb_accelerometer_get_values(tags.accelerometer);

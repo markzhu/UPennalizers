@@ -205,12 +205,8 @@ end
 
 --Added function for nao
 --returns gyro values in RPY, in rad per seconds unit
-function get_sensor_imuGyrRPY()
+function get_sensor_imuGyrNormalized()
   return get_sensor_imuGyr();
-end
-
-function get_sensor_imuAngleRPY()
-  return get_sensor_imuAngle();
 end
 
 function set_indicator_state(color)
