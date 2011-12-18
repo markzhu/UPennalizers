@@ -143,6 +143,10 @@ function get_sensor_imuAngle(index)
   end
 end
 
+function get_sensor_imuAngleRPY(index)
+  return get_sensor_imuAngle(index);
+end
+
 -- Two buttons in the array
 function get_sensor_button(index)
 --[[
@@ -259,30 +263,7 @@ function update()
     os.exit();
   end
 
-  -- Process sensors
-  accel = controller.wb_accelerometer_get_values(tags.accelerometer);
-
-  gyro = controller.wb_gyro_get_values(tags.gyro);
-  local gAccel = 9.80;
-  accY = (accel[1]-512)/128;
-  accX = -(accel[2]-512)/128;
-  if ((accX > -1) and (accX < 1) and (accY > -1) and (accY < 1)) then
-    imuAngle[1] = imuAngle[1] + aImuFilter*(math.asin(accY) - imuAngle[1]);
-    imuAngle[2] = imuAngle[2] + aImuFilter*(math.asin(accX) - imuAngle[2]);
-  end
-
---[[
-print("Accel:",unpack(accel))
-print("Gyro:",unpack(gyro))
---]]
-
-  --Yaw angle generation by gyro integration
-  imuAngle[3] = imuAngle[3] + tDelta * (gyro[3]-512) / 0.273 *
-        math.pi/180 *
-        0.9; --to compensate bodyTilt
-  --print("Yaw:",imuAngle[3]*180/math.pi)
-
-
+  update_imu();
 
 --[[
   -- Bumper Touch Sensor
@@ -291,6 +272,41 @@ print("Gyro:",unpack(gyro))
 --]]
 
 end
+
+
+function update_imu()
+  local imuGyrRPY = get_sensor_imuGyrRPY();
+  local accXYZ = get_sensor_imuAccXYZ();
+
+  --Simple integration
+  imuAngle[1] = imuAngle[1] + tDelta * imuGyrRPY[1] * 0.9; --to compensate bodyTilt
+  imuAngle[2] = imuAngle[2] + tDelta * imuGyrRPY[2] ;
+  imuAngle[3] = imuAngle[3] + tDelta * imuGyrRPY[3] * 0.9; --to compensate bodyTilt
+
+  --Update using accelerometer values 
+  local gAccel = 9.80;
+  accX = accXYZ[1];
+  accY = accXYZ[2];
+  if ((accX > -1) and (accX < 1) and (accY > -1) and (accY < 1)) then
+    imuAngle[1] = imuAngle[1] + aImuFilter*(math.asin(accY) - imuAngle[1]);
+    imuAngle[2] = imuAngle[2] + aImuFilter*(-math.asin(accX) - imuAngle[2]);
+  end
+
+  --[[
+
+  print("imuGyrRPY:",imuGyrRPY[1],imuGyrRPY[2])
+  print("imuAngleRP:",imuAngle[1]*180/math.pi,imuAngle[2]*180/math.pi)
+
+
+  print("RPY:",
+	imuAngle[1]*180/math.pi,
+	imuAngle[2]*180/math.pi,
+	imuAngle[3]*180/math.pi)
+  --]]
+
+end
+
+
 
 
 -- Extra for compatibility
@@ -323,7 +339,16 @@ end
 function get_sensor_imuGyrRPY( )
   --SJ: modified the controller wrapper function
   gyro = controller.wb_gyro_get_values(tags.gyro);
-  gyro_proc={(gyro[1]-512)/0.273, (gyro[2]-512)/0.273,(gyro[3]-512)/0.273};
+
+
+  --This is in degree/sec unit
+  gyro_proc={(gyro[1]-512)/0.273, (gyro[2]-512)/0.273, -(gyro[3]-512)/0.273};
+
+  --This is in rad/s unit
+  gyro_proc={(gyro[1]-512)/0.273*math.pi/180
+	, (gyro[2]-512)/0.273*math.pi/180,
+	 -(gyro[3]-512)/0.273*math.pi/180};
+
   return gyro_proc;
 end
 
@@ -332,6 +357,12 @@ function get_sensor_imuAcc( )
   accel = controller.wb_accelerometer_get_values(tags.accelerometer);
   return {accel[1]-512,accel[2]-512,0};
 end
+
+function get_sensor_imuAccXYZ()
+  accel = controller.wb_accelerometer_get_values(tags.accelerometer);
+  return { -(accel[2]-512)/128, -(accel[1]-512)/128 , (accel[3]-512)/128};
+end
+
 
 function set_actuator_eyeled(color)
   --input color is 0 to 31, so multiply by 8 to make 0-255

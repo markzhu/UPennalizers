@@ -59,9 +59,10 @@ function update_odometry()
   uOdometry[3] = odomScale[3]*uOdometry[3];
 
   --Gyro integration based IMU
+  --Now body yaw is opposite to world yaw
   if imuYaw==1 then
-    yaw = Body.get_sensor_imuAngle(3);
-    uOdometry[3] = yaw-yaw0;
+    yaw = Body.get_sensor_imuAngleRPY(3);
+    uOdometry[3] = -(yaw-yaw0);
     yaw0 = yaw;
 --     print("Body yaw:",yaw*180/math.pi, " Pose yaw ",pose.a*180/math.pi)
   end

@@ -93,11 +93,7 @@ function update()
   UltraSound.update();
 
   -- check if the robot is falling
-  --TODO: Imu angle should be in RPY
-  --Counter-clockwise rotation in X,Y,Z axis
-  --Current imuAngle is inverted
-
-  local imuAngle = Body.get_sensor_imuAngle();
+  local imuAngle = Body.get_sensor_imuAngleRPY();
 
   --[[
   local imuGyrRPY = Body.get_sensor_imuGyrRPY();
@@ -105,7 +101,10 @@ function update()
   print("Imu Gyr RPY:",unpack(vector.new(imuGyrRPY)*180/math.pi))
   --]]
 
-  local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]-bodyTilt));
+  --Now imu Angle is in RPY format
+  --Front tilt = minus pitch
+
+  local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]+bodyTilt));
   if (maxImuAngle > fallAngle) then
     sm:add_event("fall");
     mcm.set_walk_isFallDown(1); --Notify world to reset heading 
