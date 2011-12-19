@@ -82,3 +82,10 @@ theta_min_L = -0.4484
 theta_max_L = -0.6330
 theta_min_R = -0.4539
 theta_max_R = -0.6278
+
+-- Arm position
+qLArm=math.pi/180*vector.new({90,10,-90});
+qRArm=math.pi/180*vector.new({90,-10,-90});
+hardnessArm = 0.3;
+hardnessLeg = 1*vector.new({1,1,1,1,1,1});
+

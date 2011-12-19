@@ -30,7 +30,8 @@ dev.kinematics = 'OPKinematics';
 dev.comm='WebotsOPComm';
 dev.monitor_comm = 'NullComm';
 dev.game_control='WebotsOPGameControl';
-dev.walk='NewWalk';
+--dev.walk='NewWalk';
+dev.walk = 'HZDWalk'
 dev.kick='NewKick';
 --dev.kick='NSLKickPunch';
 

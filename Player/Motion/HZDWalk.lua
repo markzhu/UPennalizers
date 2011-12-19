@@ -11,16 +11,18 @@ t0 = Body.get_time();
 
 -- Suport the Walk API
 velCurrent = vector.new({0, 0, 0});
+stopRequest = 0;
+uLeft = vector.new({0, 0, 0});
+uRight = vector.new({0, 0, 0});
 
 -- Walk Parameters
---hardnessLeg_gnd = Config.walk.hardnessLeg;
-hardnessLeg_gnd = vector.new({1,1,1,1,1,1});
+hardnessLeg_gnd = Config_OP_HZD.hardnessLeg;
+--hardnessLeg_gnd = vector.new({1,1,1,1,1,1});
 --hardnessLeg_gnd = vector.new({.1,.1,.1,.1,.1,.1});
 hardnessLeg_gnd[5] = 0; -- Ankle pitch is free moving
---hardnessLeg_air = Config.walk.hardnessLeg;
-hardnessLeg_air = vector.new({1,1,1,1,1,1});
+hardnessLeg_air = Config_OP_HZD.hardnessLeg;
+--hardnessLeg_air = vector.new({1,1,1,1,1,1});
 --hardnessLeg_air = vector.new({.1,.1,.1,.1,.1,.1});
-
 
 -- For Debugging
 saveCount = 0;
@@ -29,14 +31,41 @@ logfile_name = string.format("/tmp/joint_angles.raw");
 stance_ankle_id = 5;
 air_ankle_id = 11;
 supportLeg = 0;
-beta = .2;
+switchLeg = 0;
+beta = .8;--.2;
 qLegs = Body.get_lleg_position();
+
+-- Set the deadbands
+local hyst = 0.02;
+qLegs_deadband_Lforward = vector.zeros(12)
+alpha = Config_OP_HZD.alpha_L;
+for i=1,12 do
+  if (i~=stance_ankle_id and i~=air_ankle_id) then
+    qLegs_deadband_Lforward[i] = util.polyval_bz(alpha[i], 0); --s = 0 for alphaL with left forward
+  end
+end
+qLegs_deadband_Rforward = vector.zeros(12)
+alpha = Config_OP_HZD.alpha_R;
+for i=1,12 do
+  if (i~=stance_ankle_id and i~=air_ankle_id) then
+    qLegs_deadband_Rforward[i] = util.polyval_bz(alpha[i], 0);
+  end
+end
+
 
 function entry()
   Body.set_syncread_enable( 3 );
   supportLeg = 0;
+  switchLeg = 0;
   qLegs = Body.get_lleg_position();
   theta_running = qLegs[stance_ankle_id];
+
+  -- Set arms out in front
+  Body.set_larm_hardness(Config_OP_HZD.hardnessArm);
+  Body.set_rarm_hardness(Config_OP_HZD.hardnessArm);
+  Body.set_larm_command(Config_OP_HZD.qLArm);
+  Body.set_rarm_command(Config_OP_HZD.qRArm);
+
 end
 
 entry();
@@ -69,20 +98,11 @@ function update( )
     theta_max = Config_OP_HZD.theta_max_R;
   end
 
-   
   theta = qLegs[stance_ankle_id]; -- Just use the stance ankle
   theta_running = beta*theta + (1-beta)*theta_running
   
---[[--webots
-  theta_max = -0.3527;
-  theta_min = 0.2063;
---]]
---[[
-  theta_max = -0.3458;
-  theta_min = -0.2003;
---]]
-
-  s = (theta - theta_min) / (theta_max - theta_min) ;
+--  s = (theta - theta_min) / (theta_max - theta_min) ;
+  s = (theta_running - theta_min) / (theta_max - theta_min) ;
 
   local hyst = 0.02;
   if( s>(1-hyst) ) then
@@ -94,16 +114,28 @@ function update( )
     s = 0;
   end;
 
+  -- Do we switch supportLeg this cycle?
   if( switchLeg == 1 ) then
     switchLeg = 0;
     supportLeg = 1 - supportLeg;
-    theta_running = qLegs[air_ankle_id];    
+    theta_running = qLegs[air_ankle_id];
   end
 
+  -- Set each ankle position
   for i=1,12 do
     if (i~=stance_ankle_id) then
       qLegs[i] = util.polyval_bz(alpha[i], s);
     end
+  end
+
+  -- Deadband
+  if( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
+    -- s=0 with supportLeg as right or s=1 with supportLeg as left
+    qLegs = qLegs_deadband_Rforward;
+    print('deadband right forward!')
+  elseif( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
+    qLegs = qLegs_deadband_Lforward;
+    print('deadband left forward!')
   end
 
   -- Debug Printing in degrees
