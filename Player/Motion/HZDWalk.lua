@@ -34,9 +34,10 @@ supportLeg = 0;
 switchLeg = 0;
 beta = .8;--.2;
 qLegs = Body.get_lleg_position();
+theta_running = qLegs[stance_ankle_id];
 
 -- Set the deadbands
-local hyst = 0.02;
+hyst = 0.02;
 qLegs_deadband_Lforward = vector.zeros(12)
 alpha = Config_OP_HZD.alpha_L;
 for i=1,12 do
@@ -68,8 +69,6 @@ function entry()
 
 end
 
-entry();
-
 function update( )
   t = Body.get_time();
   -- Read the ankle joint value
@@ -98,8 +97,8 @@ function update( )
     theta_max = Config_OP_HZD.theta_max_R;
   end
 
-  theta = qLegs[stance_ankle_id]; -- Just use the stance ankle
-  theta_running = beta*theta + (1-beta)*theta_running
+  theta = qLegs[stance_ankle_id] or 0; -- Just use the stance ankle
+  theta_running = beta*theta + (1-beta)*(theta_running or theta )
   
 --  s = (theta - theta_min) / (theta_max - theta_min) ;
   s = (theta_running - theta_min) / (theta_max - theta_min) ;
@@ -141,7 +140,7 @@ function update( )
   -- Debug Printing in degrees
   print();
   print('Support Leg: ', supportLeg);
-  print('theta: ', theta, ', s: ', s);
+  print('theta / running:', theta, '/', theta_running, ', s:', s);
 --[[
   for i=1,12 do
     print( jointNames[i] .. ':\t'..qLegs[i]*180/math.pi );
@@ -235,4 +234,6 @@ end
 function get_body_offset()
   return {0,0,0}; 
 end
+
+entry();
 
