@@ -229,7 +229,7 @@ function exit()
 end
 
 function get_odometry(u0)
-  return vector.new({0,0,0}),0;
+  return vector.new({0,0,0}),vector.new({0,0,0});
 end
    
 function get_body_offset()
