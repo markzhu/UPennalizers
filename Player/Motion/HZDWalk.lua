@@ -97,50 +97,46 @@ function update( )
     theta_max = Config_OP_HZD.theta_max_R;
   end
 
+  -- Make the measurement of our ankle angle, and filter
   theta = qLegs[stance_ankle_id] or 0; -- Just use the stance ankle
   theta_running = beta*theta + (1-beta)*(theta_running or theta )
-  
---  s = (theta - theta_min) / (theta_max - theta_min) ;
   s = (theta_running - theta_min) / (theta_max - theta_min) ;
+  -- Clamp s between 0 and 1
+  s = math.min( math.max( s,1 ), 0 );
 
-  local hyst = 0.02;
-  if( s>(1-hyst) ) then
+  -- Check if we are in the deadband
+  if( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
+    -- s=0 with supportLeg as right or s=1 with supportLeg as left
+    qLegs = qLegs_deadband_Rforward;
+    print('deadband right forward!');
+    -- Always switch legs in the deadband
     switchLeg = 1;
-    s = 1;
+  elseif( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
+    qLegs = qLegs_deadband_Lforward;
+    print('deadband left forward!')
+    -- Always switch legs in the deadband
+    switchLeg = 1;
+  else
+    -- Outside of the deadband
+    -- Set each ankle position
+    for i=1,12 do
+      if (i~=stance_ankle_id) then
+        qLegs[i] = util.polyval_bz(alpha[i], s);
+      end
+    end
   end
-  if(s<hyst) then
-    supportLeg = 1 - supportLeg;
-    s = 0;
-  end;
 
   -- Do we switch supportLeg this cycle?
   if( switchLeg == 1 ) then
     switchLeg = 0;
     supportLeg = 1 - supportLeg;
-    theta_running = qLegs[air_ankle_id];
-  end
-
-  -- Set each ankle position
-  for i=1,12 do
-    if (i~=stance_ankle_id) then
-      qLegs[i] = util.polyval_bz(alpha[i], s);
-    end
-  end
-
-  -- Deadband
-  if( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
-    -- s=0 with supportLeg as right or s=1 with supportLeg as left
-    qLegs = qLegs_deadband_Rforward;
-    print('deadband right forward!')
-  elseif( (s>(1-hyst) and supportLeg==0) or (s<hyst and supportLeg==1) ) then
-    qLegs = qLegs_deadband_Lforward;
-    print('deadband left forward!')
   end
 
   -- Debug Printing in degrees
   print();
   print('Support Leg: ', supportLeg);
-  print('theta / running:', theta, '/', theta_running, ', s:', s);
+  print('theta_running:', theta_running, ', s:', s);
+  print('theta min / max', theta_min, '/', theta_max );
 --[[
   for i=1,12 do
     print( jointNames[i] .. ':\t'..qLegs[i]*180/math.pi );
