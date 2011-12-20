@@ -50,6 +50,18 @@ walk.qLArm=math.pi/180*vector.new({90,0,-80});
 walk.qRArm=math.pi/180*vector.new({90,0,-80});
 --]]
 
+-- Stable tall walk
+walk.tZmp = 0.165;
+walk.tStep = 0.35;
+walk.phSingle={0.1,0.9};
+walk.supportY = 0.010;
+walk.supportX = -0.010;
+walk.qLArm=math.pi/180*vector.new({90,0,-80});
+walk.qRArm=math.pi/180*vector.new({90,0,-80});
+walk.bodyHeight = 0.31;
+walk.bodyTilt = 0*math.pi/180;
+walk.stepHeight = 0.03;
+
 --------------------------------------------
 -- Compensation parameters
 --------------------------------------------
