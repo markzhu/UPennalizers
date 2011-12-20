@@ -22,22 +22,23 @@ nPlayers = size(robots,1);
 cbk=[0 0 0];cr=[1 0 0];cg=[0 1 0];cb=[0 0 1];cy=[1 1 0];cw=[1 1 1];
 cmap=[cbk;cr;cy;cy;cb;cb;cb;cb;cg;cg;cg;cg;cg;cg;cg;cg;cw];
 
-
+ 
 h1 = subplot(2,2,1);
     plot_yuyv( h1, rgb );
 
 h2 = subplot(2,2,2);
     plot_label( h2, label, r_mon, scale, cmap);
 
-
 h3 = subplot(2,2,3);
-    plot_team( h3, robots, nTeams, nPlayers);
-
-
+    %plot_team( h3, robots, nTeams, nPlayers);
+    plot_surroundings( h3, r_mon );
+    
 h4 = subplot(2,2,4);
-    plot_surroundings( h4, r_mon );
+    %plot_surroundings( h4, r_mon );
+    plot_occmap( h4, r_mon.occ );
 
 
+% Function details
     function plot_yuyv( handle, rgb )
         % Process YUYV
         cla(handle);
@@ -50,11 +51,11 @@ h4 = subplot(2,2,4);
         % Process label
         cla(handle);
         if( ~isempty(label) )
-            imagesc(label);
+            image(label);
             colormap(cmap);
-            xlim([0 size(label,2)]);
-            ylim([0 size(label,1)]);
-    
+            xlim([1 size(label,2)]);
+            ylim([1 size(label,1)]);
+            
             if(r_mon.ball.detect==1)
                 hold on;
                 plot_ball( r_mon.ball, scale );
@@ -79,6 +80,11 @@ h4 = subplot(2,2,4);
                 end
                 hold off;
             end
+            % Show freespace boundary in label
+            if ( r_mon.free.detect == 1 )
+                plot_freespace( r_mon.free, scale );
+            end
+            
         end 
     end
 
