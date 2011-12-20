@@ -13,10 +13,10 @@ shsize = {};
 --TODO:
 processed_img_width = Config.camera.width;
 processed_img_height = Config.camera.height;
---if( Config.vision.subsampling==1 ) then
-processed_img_width = processed_img_width / 2;
-processed_img_height = processed_img_height / 2;
---end
+if( Config.vision.subsampling==1 ) then
+  processed_img_width = processed_img_width / 2;
+  processed_img_height = processed_img_height / 2;
+end
 
 shared.camera = {};
 shared.camera.select = vector.zeros(1);
@@ -68,6 +68,23 @@ shared.line.vendpoint = vector.zeros(4);
 shared.spot = {};
 shared.spot.detect = vector.zeros(1);
 --]]
+
+shared.freespace = {};
+shared.freespace.detect = vector.zeros(1);
+shared.freespace.block = vector.zeros(1);
+shared.freespace.nCol = vector.zeros(1);
+shared.freespace.nRow = vector.zeros(1);
+shared.freespace.vboundA = vector.zeros(2*Config.camera.width);
+shared.freespace.pboundA = vector.zeros(2*Config.camera.width);
+shared.freespace.vboundB = vector.zeros(2*Config.camera.width/(Config.vision.scaleB));
+shared.freespace.pboundB = vector.zeros(2*Config.camera.width/(Config.vision.scaleB));
+shared.freespace.horizonA = vector.zeros(4);
+
+shared.boundary = {};
+shared.boundary.detect = vector.zeros(1);
+shared.boundary.top = vector.zeros(2*Config.vision.freespace_scanColA);
+shared.boundary.bottom = vector.zeros(2*Config.vision.freespace_scanColA);
+
 shared.debug = {};
 shared.debug.enable_shm_copy = vector.zeros(1);
 shared.debug.store_goal_detections = vector.zeros(1);
@@ -75,4 +92,3 @@ shared.debug.store_ball_detections = vector.zeros(1);
 shared.debug.store_all_images = vector.zeros(1);
 
 util.init_shm_segment(getfenv(), _NAME, shared, shsize);
-

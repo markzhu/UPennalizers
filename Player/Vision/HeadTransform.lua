@@ -79,6 +79,57 @@ function update(sel,headAngles)
 
 end
 
+function viewhorizonA()
+  local ref = vector.new({0,1,0,1});
+  local ref1 = vector.new({0,-1,0,1});
+  local p0 = vector.new({0,0,0,1});
+  p0 = tHead*p0;
+  ref = tHead*ref;
+  ref1 = tHead*ref1
+  ref = ref - p0; 
+  ref1 = ref1 - p0; 
+  --print(unpack(ref1));
+  --print(unpack(ref));
+  local v = {};
+  -- leftx, lefty, rightx, righty
+  v[1] = math.floor(-math.abs(ref1[1]) * focalA / 4 + x0A + 0.5);
+  v[2] = math.floor(ref1[3] * focalA / 4 + y0A + 0.5);
+  v[3] = math.floor(math.abs(ref[1]) * focalA / 4 + x0A + 0.5);
+  v[4] = math.floor(ref[3] * focalA / 4 + y0A + 0.5);  
+  return v;
+end
+
+function rayIntersectA(c)
+  local p0 = vector.new({0,0,0,1.0});
+  local p1 = vector.new({focalA,-(c[1]-x0A),-(c[2]-y0A),1.0});
+
+  p1 = tHead * p1;
+  local p0 = tNeck * p0;
+  local v = p1 - p0;
+  local t = -p0[3]/v[3];
+  local p = p0 + t * v;
+  local uBodyOffset = mcm.get_walk_bodyOffset();
+  p[1] = p[1] + uBodyOffset[1];
+  p[2] = p[2] + uBodyOffset[2];
+  return p;
+end
+
+
+function rayIntersectB(c)
+  local p0 = vector.new({0,0,0,1.0});
+  local p1 = vector.new({focalB,-(c[1]-x0B),-(c[2]-y0B),1.0});
+
+  p1 = tHead * p1;
+  local p0 = tNeck * p0;
+  local v = p1 - p0;
+  local t = -p0[3]/v[3];
+  local p = p0 + t * v;
+  local uBodyOffset = mcm.get_walk_bodyOffset();
+  p[1] = p[1] + uBodyOffset[1];
+  p[2] = p[2] + uBodyOffset[2];
+  return p;
+end
+
 function exit()
 end
 
@@ -92,12 +143,10 @@ end
 
 function coordinatesA(c, scale)
   scale = scale or 1;
-
   local v = vector.new({focalA,
                        -(c[1] - x0A),
                        -(c[2] - y0A),
                        scale});
-
   v = tHead*v;
   v = v/v[4];
 
@@ -114,6 +163,7 @@ function coordinatesB(c, scale)
   v = v/v[4];
   return v;
 end
+
 
 function ikineCam(x, y, z, select)
 
