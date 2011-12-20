@@ -16,13 +16,9 @@ uLeft = vector.new({0, 0, 0});
 uRight = vector.new({0, 0, 0});
 
 -- Walk Parameters
-hardnessLeg_gnd = Config_OP_HZD.hardnessLeg;
---hardnessLeg_gnd = vector.new({1,1,1,1,1,1});
---hardnessLeg_gnd = vector.new({.1,.1,.1,.1,.1,.1});
+hardnessLeg_gnd = Config_OP_HZD.hardnessLeg or vector.new({.1,.1,.1,.1,.1,.1});
 hardnessLeg_gnd[5] = 0; -- Ankle pitch is free moving
-hardnessLeg_air = Config_OP_HZD.hardnessLeg;
---hardnessLeg_air = vector.new({1,1,1,1,1,1});
---hardnessLeg_air = vector.new({.1,.1,.1,.1,.1,.1});
+hardnessLeg_air = Config_OP_HZD.hardnessLeg or vector.new({.1,.1,.1,.1,.1,.1});
 
 -- For Debugging
 saveCount = 0;
