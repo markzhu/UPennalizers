@@ -108,3 +108,22 @@ end
 walk.footX = walk.footX + walk.footXComp;
 walk.footY = walk.footY + walk.footYComp;
 walk.headPitch = walk.headPitch + walk.headPitchComp;
+
+
+
+--For HT walk test
+walk.bodyHeight = 0.32; --for standup
+walk.stepHeight = 0.035;
+walk.tZmp = 0.169;
+walk.stanceLimitX={-0.20,0.20};
+walk.velLimitX={-.04,.12};
+
+walk.bodyTilt=10*math.pi/180; 
+walk.footX= -0.015; 
+
+--walk.footX= -0.018; 
+
+--[[
+walk.tStep = 0.4;
+walk.supportY = 0.010;
+--]]
