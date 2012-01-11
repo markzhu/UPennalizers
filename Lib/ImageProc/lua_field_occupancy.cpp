@@ -30,15 +30,13 @@ int lua_field_occupancy(lua_State *L) {
   const int nRegions = ni;
 
   int count[nRegions];
-  int countpos[nRegions];
+  int flag[nRegions];
   for (int i = 0; i < nRegions; i++) {
     count[i] = 0;
-    countpos[i] = 0;
+    flag[i] = 0;
   }
 
   // Scan vertical lines:
-  float aveval = 0; // average position based on value 
-  float aveidx = 0; // average position based on index
   for (int i = 0; i < ni; i++) {
     int iRegion = nRegions*i/ni;
     uint8 *im_row = im_ptr + i;
@@ -46,24 +44,28 @@ int lua_field_occupancy(lua_State *L) {
       uint8 label = *im_row;
       if ((label & colorField) || (label & colorBall) || (label & colorWhite)) {
         count[iRegion]++;
-        countpos[iRegion] += (j + 1);
       }
       im_row += ni;
     }
-    if (count[i] != 0){
-      aveval = nj - count[i]/2;
-      aveidx = countpos[i]/count[i];
-      if (fabs(aveval-aveidx) > 0.1*nj){
-        // printf("recalibrate\n");
-        count[i] = 0; 
-        uint8 *im_row = im_ptr + i;
-        for (int j = aveidx; j < nj; j++) {
-          uint8 label = *im_row;
-          if ((label & colorField) || (label & colorBall) || (label & colorWhite))
-            count[i]++;
-          im_row += ni;
-        }      
+  }
+  
+  // Evaluate bound
+  for (int i = 0; i < nRegions; i++){
+    int pxIdx = (nj - count[i] + 1) * ni + i;
+    uint8 label = *(im_ptr + pxIdx);
+    if ((label & colorField) || (label & colorBall) || (label & colorWhite))
+      flag[i] = 1;
+    else {
+      //printf("Seeking\n");
+      int j = nj - count[i] + 1;
+      for (; j < nj; j++){
+        int searchIdx = j * ni + i;
+        uint8 searchLabel = *(im_ptr + searchIdx);
+        if ((searchLabel & colorField) || (searchLabel & colorBall) || (searchLabel & colorWhite))
+            break;
       }
+      count[i] = nj - j;
+      flag[i] = 1;
     }
   }
   
