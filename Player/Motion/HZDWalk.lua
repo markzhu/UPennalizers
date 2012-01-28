@@ -123,7 +123,15 @@ function update( )
         qLegs[i] = util.polyval_bz(alpha[i], s);
       end
     end
+    if( not use_deadband and (s>1-hyst or s<hyst)) then
+      switchLeg = 1;      
+    end
   end
+
+  -- Add IMU feedback
+  local imuAngle = Body.get_sensor_imuAngle();
+  -- Bound the ankle of both left and right roll (-10 to +10 degrees)
+  qLegs[i] = util.polyval_bz(alpha[i], s ) + imuAngle[1]; -- where is is ankle roll id
 
   -- Do we switch supportLeg this cycle?
   if( switchLeg == 1 ) then
